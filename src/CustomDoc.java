@@ -23,4 +23,9 @@ public class CustomDoc {
     public void setBody(String body) {
         this.body = body;
     }
+
+    public String toString() {
+        return "Title:" + title + "\nBody:" + body ;
+    }
+
 }
