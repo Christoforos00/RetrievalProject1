@@ -50,11 +50,11 @@ public class Utils {
         return new CustomDoc(title, body );
     }
 
-    public static void main(String[] args) {
-        Utils.getAllDocs( System.getProperty("user.dir")+"/lisa"  );
-
-    }
-
+//    public static void main(String[] args) {
+//        Utils.getAllDocs( System.getProperty("user.dir")+"/lisa"  );
+//
+//    }
+//
 
 
 
