@@ -50,11 +50,50 @@ public class Utils {
         return new CustomDoc(title, body );
     }
 
-//    public static void main(String[] args) {
+
+    public static ArrayList<String> getAllQueries(String path){
+        ArrayList<String> queries = new ArrayList<String>();
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(path));
+            String currentQuery = getNextQuery(reader);
+
+            while(!currentQuery.equals("")) {
+                queries.add( currentQuery );
+                currentQuery = getNextQuery(reader);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  queries;
+
+    }
+
+
+    public static String getNextQuery(BufferedReader reader) throws IOException {
+        String batch = "";
+        reader.readLine();
+        String line = reader.readLine();
+        while ( line !=null  ){
+            batch += line + " ";
+            if (line.contains("#")) {
+                batch = batch.substring(0, batch.length() - 2);
+                break;
+            }
+            line = reader.readLine();
+        }
+        return batch;
+    }
+
+
+
+
+    public static void main(String[] args) {
 //        Utils.getAllDocs( System.getProperty("user.dir")+"/lisa"  );
-//
-//    }
-//
+        Utils.getAllQueries( System.getProperty("user.dir")+"/lisa/LISA.QUE"  );
+
+    }
+
 
 
 
