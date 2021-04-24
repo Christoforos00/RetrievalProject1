@@ -9,25 +9,21 @@ public class Utils {
         File[] listOfFiles = folder.listFiles();
 
         for (File file : listOfFiles) {
-            System.out.println(file);
             if (file.getName().equals("LISA.QUE") || file.getName().equals("LISA.REL")  || file.getName().equals("LISARJ.NUM")  || file.getName().equals("README")   )
                 continue;
 
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
                 String currentBatch = getNextBatch(reader);
+
                 while(!currentBatch.equals("")) {
                     docs.add(batchToDoc(currentBatch));
                     currentBatch = getNextBatch(reader);
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
-
-        System.out.println(docs.size());
         return docs;
     }
 
@@ -45,10 +41,12 @@ public class Utils {
     }
 
     public static CustomDoc batchToDoc(String batch){
-        int titleEndIndex = batch.indexOf("\n ");
-        String title = batch.substring(0,titleEndIndex).replace("\n"," ");
-        String body = batch.substring(titleEndIndex+6, batch.length() ).replace("\n"," ");
-        System.out.println(new CustomDoc(title, body ) );
+        int titleEndIndex = batch.indexOf(".");
+        while( !batch.substring(titleEndIndex+1,titleEndIndex+2).equals("\n" ) ){
+            titleEndIndex = batch.indexOf(".",titleEndIndex+1);
+        }
+        String title = batch.substring(0,titleEndIndex+1).replace("\n"," ").trim();
+        String body = batch.substring(titleEndIndex+1, batch.length() ).replace("\n"," ").trim();;
         return new CustomDoc(title, body );
     }
 
