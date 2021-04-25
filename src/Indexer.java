@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Indexer {
 
-    public static void IndexFiles(String path){
+    public static void indexFiles(String path){
 
         try {
             Directory indexDir = FSDirectory.open(Paths.get("Index"));
@@ -54,6 +54,6 @@ public class Indexer {
     }
 
     public static void main(String[] args) {
-        Indexer.IndexFiles(System.getProperty("user.dir")+"/lisa" );
+        Indexer.indexFiles(System.getProperty("user.dir")+"/lisa" );
     }
 }

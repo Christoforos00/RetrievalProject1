@@ -27,7 +27,7 @@ public class Utils {
         return docs;
     }
 
-    public static String getNextBatch(BufferedReader reader) throws IOException {
+    private static String getNextBatch(BufferedReader reader) throws IOException {
         String batch = "";
         reader.readLine();
         String line = reader.readLine();
@@ -40,7 +40,7 @@ public class Utils {
         return batch;
     }
 
-    public static CustomDoc batchToDoc(String batch){
+    private static CustomDoc batchToDoc(String batch){
         int titleEndIndex = batch.indexOf(".");
         while( !batch.substring(titleEndIndex+1,titleEndIndex+2).equals("\n" ) ){
             titleEndIndex = batch.indexOf(".",titleEndIndex+1);
@@ -70,7 +70,7 @@ public class Utils {
     }
 
 
-    public static String getNextQuery(BufferedReader reader) throws IOException {
+    private static String getNextQuery(BufferedReader reader) throws IOException {
         String batch = "";
         reader.readLine();
         String line = reader.readLine();
