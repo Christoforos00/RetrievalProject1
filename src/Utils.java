@@ -47,44 +47,6 @@ public class Utils {
     }
 
 
-//    public static void generateTrecEvalQrels(String path){
-//        try {
-//            BufferedReader reader = new BufferedReader(new FileReader(path));
-//            String currentResult = getNextResult(reader);
-//
-//            while(!currentResult.equals("")) {
-//                System.out.println(  currentResult);
-//                currentResult = getNextResult(reader);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
-//    private static String getNextResult(BufferedReader reader) throws IOException {
-//        String result = "";
-//        String qNum = "";
-//        String line = "";
-//        qNum += reader.readLine();
-//        if (qNum == null)
-//            return "";
-//        qNum = qNum.replace("Query ","");
-//        reader.readLine();
-//        line = reader.readLine();
-//        while (line!=null && !line.equals("")) {
-//            ArrayList<String> docs= new ArrayList<String>( Arrays.asList(line.split(" ")));
-//            for (String doc:docs){
-//                if (doc.equals("-1")) break;
-//                result+= qNum + " " + 0 + " " + doc + "\n";
-//            }
-//
-//            line = reader.readLine();
-//        }
-//        return result.trim();
-//    }
-
-
     public static void generateTrecEvalQrels(String path){
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
@@ -95,7 +57,7 @@ public class Utils {
                 if (!currentResult.equals(""))
                     text += "\n" + currentResult;
             }
-            try (PrintWriter out = new PrintWriter("QRELS.txt")) {
+            try (PrintWriter out = new PrintWriter("QRELS.test")) {
                 out.println(text);
             }
         } catch (IOException e) {
@@ -126,7 +88,7 @@ public class Utils {
                     resnum = Integer.parseInt(part.trim());
                 }
                 else if (i>1){
-                    result += qnum + " " + 0 + " " + part.trim()+ "\n";
+                    result += qnum + "\t0\t" + part.trim() + "\t1\t" + "\n";
                     if (i>resnum)
                         return result.trim();
 

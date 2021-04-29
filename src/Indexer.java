@@ -31,28 +31,23 @@ public class Indexer {
 
             for ( CustomDoc cDoc : Utils.getAllDocs(path) ){
                 Document doc = new Document();
-                doc.add( new StringField("Id",
-                        cDoc.getId(), Field.Store.YES) );
+                doc.add( new StoredField("Id",
+                        cDoc.getId()) );
                 doc.add( new TextField("Contents",
                         cDoc.getTitle()+cDoc.getBody() , Field.Store.YES) );
 
                 if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE) {
-                    // New index, so we just add the document (no old document can be there):
                     indexWriter.addDocument(doc);
                 }
-
             }
-
             indexWriter.close();
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public static void main(String[] args) {
+
         Indexer.indexFiles(System.getProperty("user.dir")+"/lisa" );
     }
 }

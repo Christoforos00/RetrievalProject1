@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.nio.file.Paths;
 
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
@@ -36,21 +38,22 @@ public class Searcher {
         Analyzer analyzer = new EnglishAnalyzer();
         QueryParser parser = new QueryParser(field, analyzer);
         int q = 0;
+        String text = "";
         for (String query : Utils.getAllQueries(queriesPath)){
-            TopDocs results = indexSearcher.search(parser.parse(query), 100);
+            TopDocs results = indexSearcher.search(parser.parse(query), 20);
             ScoreDoc[] hits = results.scoreDocs;
             long numTotalHits = results.totalHits;
-            System.out.println(numTotalHits + " total matching documents");
 
             for(int i=0; i<hits.length; i++){
                 Document hitDoc = indexSearcher.doc(hits[i].doc);
-                System.out.println("\tQuery "+q +"\tScore "+hits[i].score +"\ttitle="+hitDoc.get("Title") +"\tid="+hitDoc.get("Id") );
+                text += q + "\t0\t" + hitDoc.get("Id") + "\t0\t" +hits[i].score + "\tmethod1\t" + "\n";
             }
-
             q++;
         }
-
-
+        text = text.trim();
+        try (PrintWriter out = new PrintWriter("RESULTS.test")) {
+            out.println(text );
+        }
     }
 
     public static void main(String[] args) {
