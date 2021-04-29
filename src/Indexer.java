@@ -1,9 +1,6 @@
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -34,6 +31,8 @@ public class Indexer {
 
             for ( CustomDoc cDoc : Utils.getAllDocs(path) ){
                 Document doc = new Document();
+                doc.add( new StringField("Id",
+                        cDoc.getId(), Field.Store.YES) );
                 doc.add( new TextField("Contents",
                         cDoc.getTitle()+cDoc.getBody() , Field.Store.YES) );
 

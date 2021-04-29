@@ -35,13 +35,19 @@ public class Searcher {
     private static void searchQueries(IndexSearcher indexSearcher, String queriesPath, String field) throws ParseException, IOException {
         Analyzer analyzer = new EnglishAnalyzer();
         QueryParser parser = new QueryParser(field, analyzer);
+        int q = 0;
         for (String query : Utils.getAllQueries(queriesPath)){
-            TopDocs results = indexSearcher.search(parser.parse(query), 20);
+            TopDocs results = indexSearcher.search(parser.parse(query), 100);
             ScoreDoc[] hits = results.scoreDocs;
             long numTotalHits = results.totalHits;
             System.out.println(numTotalHits + " total matching documents");
 
+            for(int i=0; i<hits.length; i++){
+                Document hitDoc = indexSearcher.doc(hits[i].doc);
+                System.out.println("\tQuery "+q +"\tScore "+hits[i].score +"\ttitle="+hitDoc.get("Title") +"\tid="+hitDoc.get("Id") );
+            }
 
+            q++;
         }
 
 

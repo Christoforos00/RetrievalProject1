@@ -1,11 +1,11 @@
 public class CustomDoc {
 
-    private String title;
-    private String body;
+    private String title, body , id;
 
-    public CustomDoc(String title, String body){
+    public CustomDoc(String title, String body , String id){
         this.title = title;
         this.body = body;
+        this.id = id;
     }
 
     public String getTitle() {
@@ -24,8 +24,16 @@ public class CustomDoc {
         this.body = body;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String toString() {
-        return "Title:" + title + "\nBody:" + body ;
+        return "Id:" + id + "\nTitle:" + title + "\nBody:" + body ;
     }
 
 }
