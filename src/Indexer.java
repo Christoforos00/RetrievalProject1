@@ -31,17 +31,12 @@ public class Indexer {
             IndexWriter indexWriter = new IndexWriter(indexDir, iwc);
 
             for ( CustomDoc cDoc : Utils.getAllDocs(path) ){
-                System.out.println(cDoc.getId());
                 Document doc = new Document();
                 doc.add( new StoredField("id", cDoc.getId()) );
-                doc.add( new StoredField("title", cDoc.getTitle()) );
-                doc.add( new StoredField("body", cDoc.getBody()) );
                 doc.add( new TextField("contents",cDoc.getTitle()+" "+cDoc.getBody() , Field.Store.NO) );
 
-                if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE){
+                if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE)
                     indexWriter.addDocument(doc);
-                }
-
 
             }
             indexWriter.close();
@@ -51,7 +46,8 @@ public class Indexer {
     }
 
     public static void main(String[] args) {
-
         Indexer.indexFiles(System.getProperty("user.dir")+"/lisa" );
+        System.out.println("Indexing is done.");
     }
+
 }

@@ -37,7 +37,7 @@ public class Searcher {
     private static void searchQueries(IndexSearcher indexSearcher, String queriesPath, String field) throws ParseException, IOException {
         Analyzer analyzer = new EnglishAnalyzer();
         QueryParser parser = new QueryParser(field, analyzer);
-        int q = 1;
+        int qNum = 1;
         String text = "";
         for (String query : Utils.getAllQueries(queriesPath)){
             TopDocs results = indexSearcher.search(parser.parse(query), 50);
@@ -46,9 +46,9 @@ public class Searcher {
 
             for(int i=0; i<hits.length; i++){
                 Document hitDoc = indexSearcher.doc(hits[i].doc);
-                text += q + "\t0\t" + hitDoc.get("id") + "\t0\t" +hits[i].score + "\tmethod1" + "\n";
+                text += qNum + "\t0\t" + hitDoc.get("id") + "\t0\t" +hits[i].score + "\tmethod1" + "\n";
             }
-            q++;
+            qNum++;
         }
         text = text.trim();
         try (PrintWriter out = new PrintWriter("RESULTS.test")) {
@@ -57,7 +57,9 @@ public class Searcher {
     }
 
     public static void main(String[] args) {
+        Utils.generateTrecEvalQrels(System.getProperty("user.dir") + "/lisa/LISARJ.NUM");
         Searcher.search(System.getProperty("user.dir")+"/Index" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "contents");
-
+        System.out.println("Searching is done.");
     }
+
 }

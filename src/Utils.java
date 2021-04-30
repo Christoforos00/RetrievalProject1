@@ -142,15 +142,4 @@ public class Utils {
         return batch;
     }
 
-
-    public static void main(String[] args) {
-//       Utils.getAllDocs( System.getProperty("user.dir")+"/lisa"  );
-//        Utils.getAllQueries( System.getProperty("user.dir")+"/lisa/LISA.QUE"  );
-//        for (CustomDoc s :  Utils.getAllDocs( System.getProperty("user.dir")+"/lisa"  );  ))
-//            System.out.println(s.gcontains("\n"));
-
-        Utils.generateTrecEvalQrels(System.getProperty("user.dir") + "/lisa/LISARJ.NUM");
-    }
-
-
 }
