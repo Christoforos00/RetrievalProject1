@@ -8,6 +8,7 @@ public class Utils {
         ArrayList<CustomDoc> docs = new ArrayList<CustomDoc>();
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
+        Arrays.sort(listOfFiles);
 
         for (File file : listOfFiles) {
             if (file.getName().equals("LISA.QUE") || file.getName().equals("LISA.REL")  || file.getName().equals("LISARJ.NUM")  || file.getName().equals("README")   )
@@ -147,10 +148,12 @@ public class Utils {
 
 
     public static void main(String[] args) {
-//        Utils.getAllDocs( System.getProperty("user.dir")+"/lisa"  );
+//       Utils.getAllDocs( System.getProperty("user.dir")+"/lisa"  );
 //        Utils.getAllQueries( System.getProperty("user.dir")+"/lisa/LISA.QUE"  );
+//        for (CustomDoc s :  Utils.getAllDocs( System.getProperty("user.dir")+"/lisa"  );  ))
+//            System.out.println(s.gcontains("\n"));
 
-        Utils.generateTrecEvalQrels(System.getProperty("user.dir")+"/lisa/LISARJ.NUM" );
+//        Utils.generateTrecEvalQrels(System.getProperty("user.dir")+"/lisa/LISARJ.NUM" );
     }
 
 

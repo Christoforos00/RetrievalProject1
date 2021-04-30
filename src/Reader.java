@@ -30,7 +30,7 @@ public class Reader {
 
             for (int i=0; i<indexReader.maxDoc(); i++) {
                 Document doc = indexReader.document(i);
-                System.out.println("\ttitle="+doc.getField("Id")+"\tcaption:"+doc.get("Contents") );
+                System.out.println("\tid="+doc.getField("id")+"\tcontents:"+doc.get("contents") );
             }
         } catch (CorruptIndexException ex) {
             ex.printStackTrace();

@@ -30,15 +30,16 @@ public class Indexer {
             IndexWriter indexWriter = new IndexWriter(indexDir, iwc);
 
             for ( CustomDoc cDoc : Utils.getAllDocs(path) ){
+                System.out.println(cDoc.getId());
                 Document doc = new Document();
-                doc.add( new StoredField("Id",
-                        cDoc.getId()) );
-                doc.add( new TextField("Contents",
-                        cDoc.getTitle()+cDoc.getBody() , Field.Store.YES) );
+                doc.add( new StoredField("id", cDoc.getId()) );
+                doc.add( new TextField("contents",cDoc.getTitle()+cDoc.getBody() , Field.Store.YES) );
 
-                if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE) {
+                if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE){
                     indexWriter.addDocument(doc);
                 }
+
+
             }
             indexWriter.close();
         } catch (IOException e) {

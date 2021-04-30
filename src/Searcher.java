@@ -40,13 +40,13 @@ public class Searcher {
         int q = 0;
         String text = "";
         for (String query : Utils.getAllQueries(queriesPath)){
-            TopDocs results = indexSearcher.search(parser.parse(query), 20);
+            TopDocs results = indexSearcher.search(parser.parse(query), 50);
             ScoreDoc[] hits = results.scoreDocs;
             long numTotalHits = results.totalHits;
 
             for(int i=0; i<hits.length; i++){
                 Document hitDoc = indexSearcher.doc(hits[i].doc);
-                text += q + "\t0\t" + hitDoc.get("Id") + "\t0\t" +hits[i].score + "\tmethod1\t" + "\n";
+                text += q + "\t0\t" + hitDoc.get("id") + "\t0\t" +hits[i].score + "\tmethod1\t" + "\n";
             }
             q++;
         }
@@ -57,7 +57,7 @@ public class Searcher {
     }
 
     public static void main(String[] args) {
-        Searcher.search(System.getProperty("user.dir")+"/Index" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "Contents");
+        Searcher.search(System.getProperty("user.dir")+"/Index" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "contents");
 
     }
 }
