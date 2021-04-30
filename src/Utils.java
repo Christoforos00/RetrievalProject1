@@ -87,7 +87,7 @@ public class Utils {
                 } else if (i == 1) {
                     resnum = Integer.parseInt(part.trim());
                 } else if (i > 1) {
-                    result += qnum + "\t0\t" + part.trim() + "\t1\t" + "\n";
+                    result += qnum + "\t0\t" + part.trim() + "\t1" + "\n";
                     if (i > resnum)
                         return result.trim();
 
