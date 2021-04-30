@@ -123,9 +123,7 @@ public class Utils {
         }
         String id = batch.substring(0, 4).trim();
         String title = batch.substring(4, titleEndIndex + 1).replace("\n", " ").trim();
-        title = title.replaceAll("[^a-zA-Z0-9\\s]", "");
         String body = batch.substring(titleEndIndex + 1, batch.length()).replace("\n", " ").trim();
-        body = body.replaceAll("[^a-zA-Z0-9\\s]", "");
         return new CustomDoc(title, body, id);
     }
 
@@ -141,7 +139,6 @@ public class Utils {
             }
             line = reader.readLine();
         }
-        batch = batch.replaceAll("[^a-zA-Z0-9\\s]", "");
         return batch;
     }
 
