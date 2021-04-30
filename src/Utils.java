@@ -4,21 +4,21 @@ import java.util.Arrays;
 
 public class Utils {
 
-    public static ArrayList<CustomDoc> getAllDocs(String path){
+    public static ArrayList<CustomDoc> getAllDocs(String path) {
         ArrayList<CustomDoc> docs = new ArrayList<CustomDoc>();
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
         Arrays.sort(listOfFiles);
 
         for (File file : listOfFiles) {
-            if (file.getName().equals("LISA.QUE") || file.getName().equals("LISA.REL")  || file.getName().equals("LISARJ.NUM")  || file.getName().equals("README")   )
+            if (file.getName().equals("LISA.QUE") || file.getName().equals("LISA.REL") || file.getName().equals("LISARJ.NUM") || file.getName().equals("README"))
                 continue;
 
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
                 String currentBatch = getNextBatch(reader);
 
-                while(!currentBatch.equals("")) {
+                while (!currentBatch.equals("")) {
                     docs.add(batchToDoc(currentBatch));
                     currentBatch = getNextBatch(reader);
                 }
@@ -30,30 +30,30 @@ public class Utils {
     }
 
 
-    public static ArrayList<String> getAllQueries(String path){
+    public static ArrayList<String> getAllQueries(String path) {
         ArrayList<String> queries = new ArrayList<String>();
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
             String currentQuery = getNextQuery(reader);
 
-            while(!currentQuery.equals("")) {
-                queries.add( currentQuery );
+            while (!currentQuery.equals("")) {
+                queries.add(currentQuery);
                 currentQuery = getNextQuery(reader);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return  queries;
+        return queries;
     }
 
 
-    public static void generateTrecEvalQrels(String path){
+    public static void generateTrecEvalQrels(String path) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
             String currentResult = getNextResult(reader);
             String text = currentResult;
-            while(!currentResult.equals("")) {
+            while (!currentResult.equals("")) {
                 currentResult = getNextResult(reader);
                 if (!currentResult.equals(""))
                     text += "\n" + currentResult;
@@ -68,29 +68,27 @@ public class Utils {
     }
 
     private static String getNextResult(BufferedReader reader) throws IOException {
-        String result= "", qnum ;
+        String result = "", qnum;
         int resnum;
         String line = reader.readLine();
-        if (line==null)
+        if (line == null)
             return result;
-        ArrayList<String> parts = new ArrayList<String>( Arrays.asList(line.split("        ")) );
+        ArrayList<String> parts = new ArrayList<String>(Arrays.asList(line.split("        ")));
         qnum = "";
-        resnum = 0 ;
-        int i=0;
-        while (line != null){
-            parts = new ArrayList<String>( Arrays.asList(line.split("        ")) );
-            for (String part : parts){
-                if (part.equals("")){
-                    i-=1;
-                }else if(i==0){
+        resnum = 0;
+        int i = 0;
+        while (line != null) {
+            parts = new ArrayList<String>(Arrays.asList(line.split("        ")));
+            for (String part : parts) {
+                if (part.equals("")) {
+                    i -= 1;
+                } else if (i == 0) {
                     qnum = part.trim();
-                }
-                else if (i==1){
+                } else if (i == 1) {
                     resnum = Integer.parseInt(part.trim());
-                }
-                else if (i>1){
+                } else if (i > 1) {
                     result += qnum + "\t0\t" + part.trim() + "\t1\t" + "\n";
-                    if (i>resnum)
+                    if (i > resnum)
                         return result.trim();
 
                 }
@@ -107,9 +105,9 @@ public class Utils {
         String batch = "";
         String line = reader.readLine();
         if (line != null)
-            batch += line.replace("Document ","");
+            batch += line.replace("Document ", "");
         line = reader.readLine();
-        while ( line !=null  ){
+        while (line != null) {
             if (line.contains("****"))
                 break;
             batch += line + "\n";
@@ -118,22 +116,24 @@ public class Utils {
         return batch;
     }
 
-    private static CustomDoc batchToDoc(String batch){
+    private static CustomDoc batchToDoc(String batch) {
         int titleEndIndex = batch.indexOf(".");
-        while( !batch.substring(titleEndIndex+1,titleEndIndex+2).equals("\n" ) ){
-            titleEndIndex = batch.indexOf(".",titleEndIndex+1);
+        while (!batch.substring(titleEndIndex + 1, titleEndIndex + 2).equals("\n")) {
+            titleEndIndex = batch.indexOf(".", titleEndIndex + 1);
         }
-        String id = batch.substring(0,4).trim();
-        String title = batch.substring(4,titleEndIndex+1).replace("\n"," ").trim();
-        String body = batch.substring(titleEndIndex+1, batch.length() ).replace("\n"," ").trim();;
-        return new CustomDoc(title, body , id );
+        String id = batch.substring(0, 4).trim();
+        String title = batch.substring(4, titleEndIndex + 1).replace("\n", " ").trim();
+        title = title.replaceAll("[^a-zA-Z0-9\\s]", "");
+        String body = batch.substring(titleEndIndex + 1, batch.length()).replace("\n", " ").trim();
+        body = body.replaceAll("[^a-zA-Z0-9\\s]", "");
+        return new CustomDoc(title, body, id);
     }
 
     private static String getNextQuery(BufferedReader reader) throws IOException {
         String batch = "";
         reader.readLine();
         String line = reader.readLine();
-        while ( line !=null  ){
+        while (line != null) {
             batch += line + " ";
             if (line.contains("#")) {
                 batch = batch.substring(0, batch.length() - 2);
@@ -141,10 +141,9 @@ public class Utils {
             }
             line = reader.readLine();
         }
+        batch = batch.replaceAll("[^a-zA-Z0-9\\s]", "");
         return batch;
     }
-
-
 
 
     public static void main(String[] args) {
@@ -153,10 +152,8 @@ public class Utils {
 //        for (CustomDoc s :  Utils.getAllDocs( System.getProperty("user.dir")+"/lisa"  );  ))
 //            System.out.println(s.gcontains("\n"));
 
-//        Utils.generateTrecEvalQrels(System.getProperty("user.dir")+"/lisa/LISARJ.NUM" );
+        Utils.generateTrecEvalQrels(System.getProperty("user.dir") + "/lisa/LISARJ.NUM");
     }
-
-
 
 
 }
