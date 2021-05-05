@@ -4,16 +4,13 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.List;
+
 
 
 
@@ -46,6 +43,7 @@ public class Indexer {
     }
 
     public static void main(String[] args) {
+        Utils.generateTrecEvalQrels(System.getProperty("user.dir") + "/lisa/LISARJ.NUM");
         Indexer.indexFiles(System.getProperty("user.dir")+"/lisa" );
         System.out.println("Indexing is done.");
     }
