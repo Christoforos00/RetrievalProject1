@@ -40,14 +40,25 @@ public class TermDocMatrixCreator {
             type.setStoreTermVectors(true);
             IndexWriter indexWriter = new IndexWriter(indexDir, config);
 
+            // Documents
             for ( CustomDoc cDoc : Utils.getAllDocs(path) ){
                 Document doc = new Document();
-                doc.add( new StoredField("id", cDoc.getId()) );
                 doc.add( new Field("contents",cDoc.getTitle()+" "+cDoc.getBody() ,  type) );
                 if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE)
                     indexWriter.addDocument(doc);
             }
+
+            // Queries
+            for( String query : Utils.getAllQueries(path+File.separator+"LISA.QUE")){
+                Document doc = new Document();
+                doc.add( new Field("contents",query ,  type) );
+                if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE)
+                    indexWriter.addDocument(doc);
+            }
+
             indexWriter.close();
+
+
 
             IndexReader reader = DirectoryReader.open(indexDir);
             testSparseFreqDoubleArrayConversion(reader);
