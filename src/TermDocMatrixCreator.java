@@ -24,7 +24,7 @@ import java.text.NumberFormat;
 public class TermDocMatrixCreator {
 
 
-    public static void CreateTermDocMatrix(String path){
+    public static void CreateTermDocMatrix(String path) {
         try {
             Directory indexDir = FSDirectory.open(Paths.get("Index2"));
             EnglishAnalyzer analyzer = new EnglishAnalyzer();
@@ -41,23 +41,22 @@ public class TermDocMatrixCreator {
             IndexWriter indexWriter = new IndexWriter(indexDir, config);
 
             // Documents
-            for ( CustomDoc cDoc : Utils.getAllDocs(path) ){
+            for (CustomDoc cDoc : Utils.getAllDocs(path)) {
                 Document doc = new Document();
-                doc.add( new Field("contents",cDoc.getTitle()+" "+cDoc.getBody() ,  type) );
+                doc.add(new Field("contents", cDoc.getTitle() + " " + cDoc.getBody(), type));
                 if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE)
                     indexWriter.addDocument(doc);
             }
 
             // Queries
-            for( String query : Utils.getAllQueries(path+File.separator+"LISA.QUE")){
+            for (String query : Utils.getAllQueries(path + File.separator + "LISA.QUE")) {
                 Document doc = new Document();
-                doc.add( new Field("contents",query ,  type) );
+                doc.add(new Field("contents", query, type));
                 if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE)
                     indexWriter.addDocument(doc);
             }
 
             indexWriter.close();
-
 
 
             IndexReader reader = DirectoryReader.open(indexDir);
@@ -70,11 +69,13 @@ public class TermDocMatrixCreator {
 
     private static void testSparseFreqDoubleArrayConversion(IndexReader reader) throws Exception {
         Terms fieldTerms = MultiFields.getTerms(reader, "contents");   //the number of terms in the lexicon after analysis of the Field "title"
+
         System.out.println("Terms:" + fieldTerms.size());
 
-        TermsEnum it = fieldTerms.iterator();						//iterates through the terms of the lexicon
-        while(it.next() != null) {
-            System.out.print(it.term().utf8ToString() + " "); 		//prints the terms
+        TermsEnum it = fieldTerms.iterator();                        //iterates through the terms of the lexicon
+
+        while (it.next() != null) {
+            System.out.print(it.term().utf8ToString() + " ");        //prints the terms
         }
         File file = new File("termDocMatrix.csv");
         BufferedWriter output = new BufferedWriter(new FileWriter(file));
@@ -86,9 +87,9 @@ public class TermDocMatrixCreator {
                 Terms docTerms = reader.getTermVector(scoreDoc.doc, "contents");
                 Double[] vector = DocToDoubleVectorUtils.toSparseLocalFreqDoubleArray(docTerms, fieldTerms); //creates document's vector
                 NumberFormat nf = new DecimalFormat("0.#");
-                for(int i = 0; i<=vector.length-1; i++ ) {
+                for (int i = 0; i <= vector.length - 1; i++) {
 //                    System.out.print(nf.format(vector[i])+ " ");   //prints document's vector
-                    output.write(nf.format(vector[i])+ ",");
+                    output.write(nf.format(vector[i]) + ",");
                 }
                 output.write("\n");
             }
@@ -98,7 +99,7 @@ public class TermDocMatrixCreator {
 
 
     public static void main(String[] args) {
-        CreateTermDocMatrix(System.getProperty("user.dir")+ File.separator + "lisa");
+        CreateTermDocMatrix(System.getProperty("user.dir") + File.separator + "lisa");
     }
 
 

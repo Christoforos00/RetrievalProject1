@@ -124,7 +124,9 @@ public class Utils {
         }
         String id = batch.substring(0, 4).trim();
         String title = batch.substring(4, titleEndIndex + 1).replace("\n", " ").trim();
+        title = title.replaceAll("[^a-zA-Z ]", " ");
         String body = batch.substring(titleEndIndex + 1, batch.length()).replace("\n", " ").trim();
+        body = body.replaceAll("[^a-zA-Z ]", " ");
         return new CustomDoc(title, body, id);
     }
 
