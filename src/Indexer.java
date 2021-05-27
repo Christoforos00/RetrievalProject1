@@ -19,7 +19,7 @@ public class Indexer {
     public static void indexFiles(String path){
 
         try {
-            Directory indexDir = FSDirectory.open(Paths.get("Index"));
+            Directory indexDir = FSDirectory.open(Paths.get("Index2"));
             Analyzer analyzer = new EnglishAnalyzer();
             Similarity similarity =new ClassicSimilarity();
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);

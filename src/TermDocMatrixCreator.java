@@ -16,6 +16,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -88,7 +89,7 @@ public class TermDocMatrixCreator {
                 Double[] vector = DocToDoubleVectorUtils.toSparseLocalFreqDoubleArray(docTerms, fieldTerms); //creates document's vector
                 NumberFormat nf = new DecimalFormat("0.#");
                 for (int i = 0; i <= vector.length - 1; i++) {
-//                    System.out.print(nf.format(vector[i])+ " ");   //prints document's vector
+
                     output.write(nf.format(vector[i]) + ",");
                 }
                 output.write("\n");
