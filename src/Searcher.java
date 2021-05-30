@@ -15,24 +15,27 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.LMJelinekMercerSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.FSDirectory;
 
 public class Searcher {
 
-    public static void search(String indexPath , String queriesPath ,String field, int k ) {
+    public static void search(String indexPath , String queriesPath , String resultsPath, String field, int k , Similarity similarity) {
         try {
             IndexReader indexReader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-            indexSearcher.setSimilarity(new ClassicSimilarity());
-            searchQueries(indexSearcher,queriesPath, field, k);
+            indexSearcher.setSimilarity(similarity );
+            searchQueries(indexSearcher, queriesPath, resultsPath, field, k);
             indexReader.close();
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }
 
-    private static void searchQueries(IndexSearcher indexSearcher, String queriesPath, String field, int k) throws ParseException, IOException {
+    private static void searchQueries(IndexSearcher indexSearcher, String queriesPath, String resultsPath, String field, int k) throws ParseException, IOException {
         Analyzer analyzer = new EnglishAnalyzer();
         QueryParser parser = new QueryParser(field, analyzer);
         int qNum = 1;
@@ -40,7 +43,6 @@ public class Searcher {
         for (String query : Utils.getAllQueries(queriesPath)){
             TopDocs results = indexSearcher.search(parser.parse(query), k);
             ScoreDoc[] hits = results.scoreDocs;
-            long numTotalHits = results.totalHits;
 
             for(int i=0; i<hits.length; i++){
                 Document hitDoc = indexSearcher.doc(hits[i].doc);
@@ -49,7 +51,7 @@ public class Searcher {
             qNum++;
         }
         text = text.trim();
-        try (PrintWriter out = new PrintWriter("RESULTS_k"+ k +".test")) {
+        try (PrintWriter out = new PrintWriter(resultsPath+"/RESULTS_k"+ k +".test")) {
             out.println(text );
         }
     }
@@ -57,7 +59,10 @@ public class Searcher {
     public static void main(String[] args) {
 
         for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
-            Searcher.search(System.getProperty("user.dir")+"/Index" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "contents",k);
+            Searcher.search(System.getProperty("user.dir")+"/Index3_BM25" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/BM25results" ,"contents",k, new BM25Similarity());
+
+        for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
+            Searcher.search(System.getProperty("user.dir")+"/Index3_LM" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/LMresults" , "contents",k , new LMJelinekMercerSimilarity(0.3f));
 
         System.out.println("Searching is done.");
     }

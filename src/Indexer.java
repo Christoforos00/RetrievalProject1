@@ -4,7 +4,9 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.LMJelinekMercerSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -16,12 +18,11 @@ import java.nio.file.Paths;
 
 public class Indexer {
 
-    public static void indexFiles(String path){
+    public static void indexFiles(String path , String indexPath, Similarity similarity){
 
         try {
-            Directory indexDir = FSDirectory.open(Paths.get("Index2"));
+            Directory indexDir = FSDirectory.open(Paths.get(indexPath));
             Analyzer analyzer = new EnglishAnalyzer();
-            Similarity similarity =new ClassicSimilarity();
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
             iwc.setSimilarity(similarity);
             iwc.setOpenMode(OpenMode.CREATE);
@@ -44,7 +45,12 @@ public class Indexer {
 
     public static void main(String[] args) {
         Utils.generateTrecEvalQrels(System.getProperty("user.dir") + "/lisa/LISARJ.NUM");
-        Indexer.indexFiles(System.getProperty("user.dir")+"/lisa" );
+
+        String path = System.getProperty("user.dir")+"/lisa";
+
+        Indexer.indexFiles( path , "Index3_BM25" , new BM25Similarity());
+        Indexer.indexFiles( path , "Index3_LM" , new LMJelinekMercerSimilarity(0.3f));
+
         System.out.println("Indexing is done.");
     }
 

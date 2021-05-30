@@ -32,7 +32,6 @@ public class Utils {
 
     public static ArrayList<String> getAllQueries(String path) {
         ArrayList<String> queries = new ArrayList<String>();
-        System.out.println(path);
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
