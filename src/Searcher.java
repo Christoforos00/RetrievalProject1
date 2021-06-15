@@ -62,7 +62,7 @@ public class Searcher {
             Searcher.search(System.getProperty("user.dir")+"/Index3_BM25" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/BM25results" ,"contents",k, new BM25Similarity());
 
         for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
-            Searcher.search(System.getProperty("user.dir")+"/Index3_LM" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/LMresults" , "contents",k , new LMJelinekMercerSimilarity(0.3f));
+            Searcher.search(System.getProperty("user.dir")+"/Index3_LM" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/LMresults" , "contents",k , new LMJelinekMercerSimilarity(0.f));
 
         System.out.println("Searching is done.");
     }
