@@ -4,12 +4,10 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 import org.deeplearning4j.models.embeddings.learning.impl.elements.CBOW;
-import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -18,9 +16,9 @@ import org.nd4j.linalg.ops.transforms.Transforms;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.*;
 
-public class Word2VecRanker {
+public class Word2VecRanker3 {
 
 
 
@@ -111,10 +109,15 @@ public class Word2VecRanker {
 
                 System.out.println(doc.getField("id") + " : " + scoreDoc.score);
 
+                //Explanation ex = searcher.explain(query, scoreDoc.doc);
+                //System.out.println(ex);
+
                 Terms docTerms = indexReader.getTermVector(scoreDoc.doc, fieldName);
                 INDArray denseAverageDocumentVector = VectorizeUtils.toDenseAverageVector(docTerms, vec);
 
+                //            INDArray denseAverageTFIDFDocumentVector = VectorizeUtils.toDenseAverageTFIDFVector(docTerms, indexReader.numDocs(), vec);
                 System.out.println("cosineSimilarityDenseAvg=" + Transforms.cosineSim(denseAverageQueryVector, denseAverageDocumentVector));
+                //            System.out.println("cosineSimilarityDenseAvgTFIDF=" + Transforms.cosineSim(denseAverageTFIDFQueryVector, denseAverageTFIDFDocumentVector));
             }
             System.out.println(qNum + " query done");
             qNum++;
@@ -122,6 +125,31 @@ public class Word2VecRanker {
         try (PrintWriter out = new PrintWriter(resultsPath+"/RESULTS_k"+ k +".test")) {
             out.println(text );
         }
+    }
+
+
+    public static List<Integer> getTopDocs(HashMap<Integer, Double> similarities, int k){
+        Map<Integer, Double> sortedSim = sortByValue(similarities);
+        ArrayList<Integer> topDocs = new ArrayList<>(sortedSim.keySet());
+        return topDocs.subList(0,k);
+    }
+
+    private static Map<Integer, Double> sortByValue(Map<Integer, Double> hm) {
+        // Create a list from elements of HashMap
+        List<Map.Entry<Integer, Double>> list = new LinkedList<Map.Entry<Integer, Double>>(hm.entrySet());
+        // Sort the list
+        Collections.sort(list, new Comparator<Map.Entry<Integer, Double>>() {
+            public int compare(Map.Entry<Integer, Double> o1,
+                               Map.Entry<Integer, Double> o2) {
+                return -(o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+        // put data from sorted list to hashmap
+        HashMap<Integer, Double> temp = new LinkedHashMap<Integer, Double>();
+        for (Map.Entry<Integer, Double> aa : list) {
+            temp.put(aa.getKey(), aa.getValue());
+        }
+        return temp;
     }
 
 

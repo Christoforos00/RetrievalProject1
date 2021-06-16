@@ -13,7 +13,7 @@ public class Reader {
     public static void Read(){
 
         try {
-            IndexReader indexReader = DirectoryReader.open(FSDirectory.open(Paths.get("Index")));
+            IndexReader indexReader = DirectoryReader.open(FSDirectory.open(Paths.get("Index4")));
             printIndexDocuments(indexReader);
 
             //Close indexReader

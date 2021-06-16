@@ -10,8 +10,9 @@ public class Utils {
         File[] listOfFiles = folder.listFiles();
         Arrays.sort(listOfFiles);
 
+        int id=1;
         for (File file : listOfFiles) {
-            if (file.getName().equals("LISA.QUE") || file.getName().equals("LISA.REL") || file.getName().equals("LISARJ.NUM") || file.getName().equals("README"))
+            if (file.getName().equals("LISA.QUE") || file.getName().equals("LISA.REL") || file.getName().equals("LISARJ.NUM") || file.getName().equals("README")  || file.getName().equals("Merged"))
                 continue;
 
             try {
@@ -19,7 +20,8 @@ public class Utils {
                 String currentBatch = getNextBatch(reader);
 
                 while (!currentBatch.equals("")) {
-                    docs.add(batchToDoc(currentBatch));
+                    docs.add(batchToDoc(currentBatch, id));
+                    id++;
                     currentBatch = getNextBatch(reader);
                 }
             } catch (IOException e) {
@@ -28,6 +30,18 @@ public class Utils {
         }
         return docs;
     }
+
+    public static void mergeAllDocs(String path){
+
+        try (PrintWriter out = new PrintWriter(path + File.separator + "Merged")) {
+            for (CustomDoc doc : getAllDocs(path)){
+                out.println(doc.getId() + " " + doc.getBody() );
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     public static ArrayList<String> getAllQueries(String path) {
@@ -116,17 +130,17 @@ public class Utils {
         return batch;
     }
 
-    private static CustomDoc batchToDoc(String batch) {
+    private static CustomDoc batchToDoc(String batch, int id) {
         int titleEndIndex = batch.indexOf(".");
         while (!batch.substring(titleEndIndex + 1, titleEndIndex + 2).equals("\n")) {
             titleEndIndex = batch.indexOf(".", titleEndIndex + 1);
         }
-        String id = batch.substring(0, 4).trim();
+//        String id = batch.substring(0, 4).trim();
         String title = batch.substring(4, titleEndIndex + 1).replace("\n", " ").trim();
         title = title.replaceAll("[^a-zA-Z ]", " ");
         String body = batch.substring(titleEndIndex + 1, batch.length()).replace("\n", " ").trim();
         body = body.replaceAll("[^a-zA-Z ]", " ");
-        return new CustomDoc(title, body, id);
+        return new CustomDoc(title, body, String.valueOf(id));
     }
 
     private static String getNextQuery(BufferedReader reader) throws IOException {
