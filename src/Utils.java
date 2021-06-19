@@ -52,7 +52,7 @@ public class Utils {
             String currentQuery = getNextQuery(reader);
 
             while (!currentQuery.equals("")) {
-                queries.add(currentQuery);
+                queries.add( currentQuery.replaceAll("[^A-Za-z0-9 ]", "") );
                 currentQuery = getNextQuery(reader);
             }
         } catch (IOException e) {

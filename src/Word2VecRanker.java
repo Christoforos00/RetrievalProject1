@@ -15,6 +15,7 @@ import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFac
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.ops.transforms.Transforms;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
@@ -61,17 +62,20 @@ public class Word2VecRanker {
             String fieldName = "contents";
             FieldValuesSentenceIterator fieldValuesSentenceIterator = new FieldValuesSentenceIterator(indexReader, fieldName);
 
-            vec = new Word2Vec.Builder()
-                    .layerSize(50)
-                    .windowSize(6)
-                    .tokenizerFactory(new DefaultTokenizerFactory())
-                    .iterate(fieldValuesSentenceIterator)
-                    .elementsLearningAlgorithm(new CBOW<>())
-                    .seed(12345)
-                    .build();
-            vec.fit();
-//            vec = WordVectorSerializer.readWord2VecModel("PreTrainedModel/model.txt");
+//            vec = new Word2Vec.Builder()
+//                    .layerSize(50)
+//                    .windowSize(6)
+//                    .tokenizerFactory(new DefaultTokenizerFactory())
+//                    .iterate(fieldValuesSentenceIterator)
+//                    .elementsLearningAlgorithm(new CBOW<>())
+//                    .seed(12345)
+//                    .build();
+//            vec.fit();
+            vec = WordVectorSerializer.readWord2VecModel(new File("PreTrainedModel/2/model3.txt"));
 
+            System.out.println( vec.wordsNearest("tall",10) );
+            System.out.println( vec.wordsNearest("small",10) );
+            System.out.println( vec.wordsNearest("color",10) );
 
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
             indexSearcher.setSimilarity(new WordEmbeddingsSimilarity(vec, fieldName, WordEmbeddingsSimilarity.Smoothing.MEAN));
@@ -100,6 +104,14 @@ public class Word2VecRanker {
         for (String queryString :Utils.getAllQueries(System.getProperty("user.dir")+"/lisa/LISA.QUE" )) {
             System.out.println("a");
             String[] terms = queryString.split(" ");
+
+//            System.out.println(queryString);
+//            for (String t : terms){
+//                System.out.println(t.toLowerCase());
+//                System.out.println(vec.getWordVectorMatrix(t.toLowerCase()));
+//            }
+//            System.out.println();
+
             INDArray denseAverageQueryVector = vec.getWordVectorsMean(Arrays.asList(terms));
             TopDocs hits = indexSearcher.search(parser.parse(queryString), k);
             ScoreDoc[] hitsArray = hits.scoreDocs;
