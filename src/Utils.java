@@ -35,7 +35,7 @@ public class Utils {
 
         try (PrintWriter out = new PrintWriter(path + File.separator + "Merged")) {
             for (CustomDoc doc : getAllDocs(path)){
-                out.println(doc.getId() + " " + doc.getBody() );
+                out.println(doc.getTitle().toLowerCase() + " " + doc.getBody().toLowerCase()  );
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -52,7 +52,7 @@ public class Utils {
             String currentQuery = getNextQuery(reader);
 
             while (!currentQuery.equals("")) {
-                queries.add( currentQuery.replaceAll("[^A-Za-z0-9 ]", "") );
+                queries.add( currentQuery.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase() );
                 currentQuery = getNextQuery(reader);
             }
         } catch (IOException e) {
@@ -140,7 +140,7 @@ public class Utils {
         title = title.replaceAll("[^a-zA-Z ]", " ");
         String body = batch.substring(titleEndIndex + 1, batch.length()).replace("\n", " ").trim();
         body = body.replaceAll("[^a-zA-Z ]", " ");
-        return new CustomDoc(title, body, String.valueOf(id));
+        return new CustomDoc(title.toLowerCase(), body.toLowerCase(), String.valueOf(id));
     }
 
     private static String getNextQuery(BufferedReader reader) throws IOException {

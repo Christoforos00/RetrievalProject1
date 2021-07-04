@@ -46,6 +46,7 @@ public class Searcher {
 
             for(int i=0; i<hits.length; i++){
                 Document hitDoc = indexSearcher.doc(hits[i].doc);
+                System.out.println(hits[i].doc);
                 text += qNum + "\t0\t" + hitDoc.get("id") + "\t0\t" +hits[i].score + "\tmethod1" + "\n";
             }
             qNum++;
@@ -58,11 +59,16 @@ public class Searcher {
 
     public static void main(String[] args) {
 
+        //phase1
+        for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
+            Searcher.search(System.getProperty("user.dir")+"/Index" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase1Results" ,"contents",k, new ClassicSimilarity());
+
+        //phase 3
         for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
             Searcher.search(System.getProperty("user.dir")+"/Index3_BM25" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/BM25results" ,"contents",k, new BM25Similarity());
 
         for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
-            Searcher.search(System.getProperty("user.dir")+"/Index3_LM" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/LMresults" , "contents",k , new LMJelinekMercerSimilarity(0.f));
+            Searcher.search(System.getProperty("user.dir")+"/Index3_LM" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/LMresults" , "contents",k , new LMJelinekMercerSimilarity(0.3f));
 
         System.out.println("Searching is done.");
     }

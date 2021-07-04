@@ -19,11 +19,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 
+
 public class Word2VecRanker {
-
-
+    public static boolean saved = false;
 
     public static void Index(String path , String indexPath)  {
         try {
@@ -62,71 +63,59 @@ public class Word2VecRanker {
             String fieldName = "contents";
             FieldValuesSentenceIterator fieldValuesSentenceIterator = new FieldValuesSentenceIterator(indexReader, fieldName);
 
-//            vec = new Word2Vec.Builder()
-//                    .layerSize(50)
-//                    .windowSize(6)
-//                    .tokenizerFactory(new DefaultTokenizerFactory())
-//                    .iterate(fieldValuesSentenceIterator)
-//                    .elementsLearningAlgorithm(new CBOW<>())
-//                    .seed(12345)
-//                    .build();
-//            vec.fit();
-            vec = WordVectorSerializer.readWord2VecModel(new File("PreTrainedModel/2/model3.txt"));
+            vec = new Word2Vec.Builder()
+                    .layerSize(50)
+                    .windowSize(6)
+                    .tokenizerFactory(new DefaultTokenizerFactory())
+                    .iterate(fieldValuesSentenceIterator)
+                    .elementsLearningAlgorithm(new CBOW<>())
+                    .seed(12345)
+                    .build();
+            vec.fit();
 
-            System.out.println( vec.wordsNearest("tall",10) );
-            System.out.println( vec.wordsNearest("small",10) );
-            System.out.println( vec.wordsNearest("color",10) );
+            if (!saved){
+                WordVectorSerializer.writeWord2VecModel(vec, "TrainedModel/trainedModel.txt");
+                saved = true;
+                System.out.println("SAVED");
+            }
+
+            // is commented out, since we train the model above
+//            vec = WordVectorSerializer.readWord2VecModel(new File("PreTrainedModel/model.txt"));
+
+            System.out.println(vec.wordsNearest("big",5));
 
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
             indexSearcher.setSimilarity(new WordEmbeddingsSimilarity(vec, fieldName, WordEmbeddingsSimilarity.Smoothing.MEAN));
-
-
-            rankResults(indexReader, indexSearcher, vec, fieldName, resultsPath, k);
-
+            rankResults( indexSearcher, vec, fieldName, resultsPath, k);
 
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }finally {
-            System.out.println("DONE");
-//            WordVectorSerializer.writeWord2VecModel(vec, "TrainedModel/model.txt");
+            System.out.println("DONE k: " + k);
         }
 
     }
 
 
 
-    public static void rankResults(IndexReader indexReader , IndexSearcher indexSearcher, Word2Vec vec, String fieldName , String resultsPath, int k) throws IOException, ParseException {
+    public static void rankResults(IndexSearcher indexSearcher, Word2Vec vec, String fieldName , String resultsPath, int k) throws IOException, ParseException {
 
         QueryParser parser = new QueryParser(fieldName, new WhitespaceAnalyzer());
         int qNum = 1;
         String text = "";
 
         for (String queryString :Utils.getAllQueries(System.getProperty("user.dir")+"/lisa/LISA.QUE" )) {
-            System.out.println("a");
-            String[] terms = queryString.split(" ");
 
-//            System.out.println(queryString);
-//            for (String t : terms){
-//                System.out.println(t.toLowerCase());
-//                System.out.println(vec.getWordVectorMatrix(t.toLowerCase()));
-//            }
-//            System.out.println();
+            queryString = removeUnknownTerms(queryString, vec);
 
-            INDArray denseAverageQueryVector = vec.getWordVectorsMean(Arrays.asList(terms));
             TopDocs hits = indexSearcher.search(parser.parse(queryString), k);
             ScoreDoc[] hitsArray = hits.scoreDocs;
-            System.out.println("b");
+
             for (int i = 0; i < hits.scoreDocs.length; i++) {
                 ScoreDoc scoreDoc = hits.scoreDocs[i];
                 Document doc = indexSearcher.doc(scoreDoc.doc);
                 text += qNum + "\t0\t" + doc.get("id") + "\t0\t" + hitsArray[i].score + "\tmethod1" + "\n";
 
-                System.out.println(doc.getField("id") + " : " + scoreDoc.score);
-
-                Terms docTerms = indexReader.getTermVector(scoreDoc.doc, fieldName);
-                INDArray denseAverageDocumentVector = VectorizeUtils.toDenseAverageVector(docTerms, vec);
-
-                System.out.println("cosineSimilarityDenseAvg=" + Transforms.cosineSim(denseAverageQueryVector, denseAverageDocumentVector));
             }
             System.out.println(qNum + " query done");
             qNum++;
@@ -136,13 +125,26 @@ public class Word2VecRanker {
         }
     }
 
+    public static String removeUnknownTerms(String queryString, Word2Vec vec){
+        String[] terms = queryString.split(" ");
+        queryString = "";
 
+        for (String term : terms){
+            if (!term.contains(" ") && vec.vocab().words().contains(term)){
+                queryString += term + " ";
+            }
+        }
+        if (queryString.length()>0)
+            queryString = queryString.substring(0,queryString.length()-1);
+
+        return queryString;
+    }
 
     public static void main(String[] args) {
-        Index(System.getProperty("user.dir")+"/lisa" , "Index4" );
-//        Reader.Read();
-        Rank("Index4" ,"phase4Results", 50);
-        Utils.mergeAllDocs(System.getProperty("user.dir")+"/lisa" );
+//        Index(System.getProperty("user.dir")+"/lisa" , "Index4" );
+
+        for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
+            Rank("Index4" ,"phase4Results", k);
     }
 
 }

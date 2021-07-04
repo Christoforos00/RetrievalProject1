@@ -59,7 +59,6 @@ public class TermDocMatrixCreator {
 
             indexWriter.close();
 
-
             IndexReader reader = DirectoryReader.open(indexDir);
             testSparseFreqDoubleArrayConversion(reader);
             reader.close();

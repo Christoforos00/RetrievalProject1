@@ -48,6 +48,8 @@ public class Indexer {
 
         String path = System.getProperty("user.dir")+"/lisa";
 
+        Indexer.indexFiles( path , "Index" , new ClassicSimilarity());
+
         Indexer.indexFiles( path , "Index3_BM25" , new BM25Similarity());
         Indexer.indexFiles( path , "Index3_LM" , new LMJelinekMercerSimilarity(0.3f));
 
