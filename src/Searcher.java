@@ -15,38 +15,40 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.similarities.BM25Similarity;
-import org.apache.lucene.search.similarities.ClassicSimilarity;
-import org.apache.lucene.search.similarities.LMJelinekMercerSimilarity;
-import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.search.similarities.*;
 import org.apache.lucene.store.FSDirectory;
+import org.deeplearning4j.models.word2vec.Word2Vec;
 
 public class Searcher {
 
-    public static void search(String indexPath , String queriesPath , String resultsPath, String field, int k , Similarity similarity) {
+    public static void search(String indexPath , String queriesPath , String resultsPath, String field, int k , Word2Vec vec, Similarity similarity) {
         try {
             IndexReader indexReader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
             indexSearcher.setSimilarity(similarity );
-            searchQueries(indexSearcher, queriesPath, resultsPath, field, k);
+            searchQueries(indexSearcher, queriesPath, resultsPath, field, k, vec);
             indexReader.close();
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }
 
-    private static void searchQueries(IndexSearcher indexSearcher, String queriesPath, String resultsPath, String field, int k) throws ParseException, IOException {
+    private static void searchQueries(IndexSearcher indexSearcher, String queriesPath, String resultsPath, String field, int k, Word2Vec vec) throws ParseException, IOException {
         Analyzer analyzer = new EnglishAnalyzer();
         QueryParser parser = new QueryParser(field, analyzer);
         int qNum = 1;
         String text = "";
         for (String query : Utils.getAllQueries(queriesPath)){
+
+            if (vec != null)
+                query = Word2VecRanker.removeUnknownTerms(query, vec);
+
+
             TopDocs results = indexSearcher.search(parser.parse(query), k);
             ScoreDoc[] hits = results.scoreDocs;
 
             for(int i=0; i<hits.length; i++){
                 Document hitDoc = indexSearcher.doc(hits[i].doc);
-                System.out.println(hits[i].doc);
                 text += qNum + "\t0\t" + hitDoc.get("id") + "\t0\t" +hits[i].score + "\tmethod1" + "\n";
             }
             qNum++;
@@ -61,14 +63,15 @@ public class Searcher {
 
         //phase1
         for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
-            Searcher.search(System.getProperty("user.dir")+"/Index" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase1Results" ,"contents",k, new ClassicSimilarity());
+            Searcher.search(System.getProperty("user.dir")+"/Index" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase1Results" ,"contents",k, null, new ClassicSimilarity() );
 
         //phase 3
         for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
-            Searcher.search(System.getProperty("user.dir")+"/Index3_BM25" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/BM25results" ,"contents",k, new BM25Similarity());
+            Searcher.search(System.getProperty("user.dir")+"/Index3_BM25" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/BM25results" ,"contents",k,null,  new BM25Similarity());
 
         for ( int k : new ArrayList<Integer>(Arrays.asList(20,30,50)) )
-            Searcher.search(System.getProperty("user.dir")+"/Index3_LM" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/LMresults" , "contents",k , new LMJelinekMercerSimilarity(0.3f));
+            Searcher.search(System.getProperty("user.dir")+"/Index3_LM" , System.getProperty("user.dir")+"/lisa/LISA.QUE" , "phase3Results/LMresults" , "contents",k , null, new LMJelinekMercerSimilarity(0.3f));
+
 
         System.out.println("Searching is done.");
     }
